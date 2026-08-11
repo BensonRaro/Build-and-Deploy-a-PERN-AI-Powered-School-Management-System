@@ -24,7 +24,9 @@ Some modules are reserved as **extra features**, unlocked for **Patreon members*
 - **Books catalog** with cover uploads (EdgeStore), auto-generated reference numbers (`BK-0001`), and copy/inventory tracking.
 - **Borrow / return flow** — race-safe copy decrement on issue, computed **overdue status** on read, and automatic **fines ($0.50/day)** on late returns.
 
-> 👉 Join the **Patreon** or **purchase the code** to unlock Attendance, Library, and any future extra modules.
+> 👉 Join the **[Patreon](https://www.patreon.com/BensonRaro/posts/build-and-deploy-166366832)** or **purchase the code** to unlock Attendance, Library, and any future extra modules.
+>
+> 📖 **Build & deploy guide** — step-by-step tutorial on building and deploying the full project: [Patreon post](https://www.patreon.com/BensonRaro/posts/build-and-deploy-166366832)
 
 ---
 
@@ -159,7 +161,7 @@ Open [http://localhost:5173](http://localhost:5173), sign in, and you're in the 
 - **Books catalog** with cover uploads (EdgeStore), auto-generated reference numbers (`BK-0001`), and copy tracking.
 - **Borrow / return flow** — race-safe copy decrement on issue, computed **overdue status** on read, and automatic **fines ($0.50/day)** on late returns.
 
-> 💡 In this free source code these two modules are **not included** — their dashboard routes render a simple placeholder page. Join the **Patreon** or **purchase the code** to get the full implementations.
+> 💡 In this free source code these two modules are **not included** — their dashboard routes render a simple placeholder page. Join the **[Patreon](https://www.patreon.com/BensonRaro/posts/build-and-deploy-166366832)** or **purchase the code** to get the full implementations.
 >
 > **Note:** the Prisma schema here also excludes the Attendance/Library tables. If you are upgrading from a previous version that included them, run `bunx prisma migrate dev` to sync your database (this drops the old `student_attendance`, `book`, and `book_issue` tables).
 
