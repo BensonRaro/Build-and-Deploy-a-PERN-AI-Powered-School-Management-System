@@ -1,0 +1,13 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    {
+      "source": "/edgestore/:path*",
+      "destination": "https://sms-pern-backend.vercel.app/edgestore/:path*"
+    },
+    {
+      "source": "/((?!edgestore/).*)",
+      "destination": "/index.html"
+    }
+  ]
+}

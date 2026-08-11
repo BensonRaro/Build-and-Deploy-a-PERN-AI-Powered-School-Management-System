@@ -1,0 +1,549 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ----------------------------------------------------
+// ENUMS & SYSTEM ROLES
+// ----------------------------------------------------
+
+enum Role {
+  SUPER_ADMIN
+  PRINCIPAL
+  VICE_PRINCIPAL
+  TEACHER
+  LIBRARIAN
+  ACCOUNTANT
+  COUNSELOR
+  STAFF
+  STUDENT
+  PARENT
+}
+
+enum InvoiceStatus {
+  UNPAID
+  PARTIALLY_PAID
+  PAID
+  CANCELLED
+}
+
+enum PaymentMethod {
+  CASH
+  BANK_TRANSFER
+  CREDIT_CARD
+  MOBILE_MONEY
+}
+
+enum GuardianRelation {
+  FATHER
+  MOTHER
+  GUARDIAN
+  OTHER
+}
+
+enum AssignmentType {
+  WITH_ANSWERS   // Q&A — questions with answer keys, auto-graded on submit
+  QUESTIONS_ONLY // Questions only — teacher grades manually
+}
+
+enum AssignmentStatus {
+  DRAFT
+  PUBLISHED
+  CLOSED
+}
+
+enum AssignmentSubmissionStatus {
+  SUBMITTED
+  GRADED
+}
+
+// ----------------------------------------------------
+// USER IDENTITY & AUTHENTICATION
+// ----------------------------------------------------
+
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  banned        Boolean   @default(false)
+  active        Boolean   @default(true)
+  role          Role      @default(STUDENT)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime? // soft delete: preserves audit trail (grades/payments reference users)
+
+  // Stripe billing — set by the @better-auth/stripe plugin (createCustomerOnSignUp)
+  stripeCustomerId String?
+
+  sessions      Session[]
+  accounts      Account[]
+  activityLogs  ActivityLog[]
+
+  // Profile links (1-to-1). Staff covers every non-student/parent role.
+  studentProfile StudentProfile?
+  parentProfile  ParentProfile?
+  staffProfile   StaffProfile?
+
+  // Action/audit relations — kept distinct so each write is traceable to its actor
+  recordedPayments     Payment[]           @relation("PaymentRecorder")
+  authoredAnnouncements Announcement[]     @relation("Author")
+
+  // Assignments — teachers/admins author them, and may grade submissions
+  createdAssignments   Assignment[]         @relation("AssignmentAuthor")
+  gradedSubmissions    AssignmentSubmission[] @relation("SubmissionGrader")
+
+  @@index([role])
+  @@index([active])
+  @@index([deletedAt]) // soft-delete filter runs on every users list query
+  @@map("user")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  expiresAt DateTime
+  token     String   @unique
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activity  String
+  details   String?
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@map("activity_log")
+}
+
+// ----------------------------------------------------
+// EXTENDED USER PROFILES
+// ----------------------------------------------------
+
+model StudentProfile {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  gradeId         String
+  grade           Grade    @relation(fields: [gradeId], references: [id], onDelete: Cascade)
+  admissionNumber String   @unique
+  dateOfBirth     DateTime
+  gender          String
+  bloodGroup      String?
+  address         String?
+
+  academicYearId String
+  academicYear   AcademicYear   @relation(fields: [academicYearId], references: [id], onDelete: Cascade)
+  enrollmentDate DateTime       @default(now())
+  active         Boolean        @default(true)
+
+  guardians       StudentGuardian[]
+  invoices        Invoice[]
+  assignmentSubmissions AssignmentSubmission[]
+
+  // AI Predictive Analytics & Reports
+  aiInsights      AiInsight[]
+
+  @@index([gradeId, academicYearId, active])
+  @@index([academicYearId])
+  @@map("student_profile")
+}
+
+model ParentProfile {
+  id         String   @id @default(cuid())
+  userId     String   @unique
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  phone      String
+  occupation String?
+  address    String?
+
+  students   StudentGuardian[]
+
+  @@map("parent_profile")
+}
+
+model StudentGuardian {
+  id              String           @id @default(cuid())
+  studentId       String
+  student         StudentProfile   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  parentId        String
+  parent          ParentProfile    @relation(fields: [parentId], references: [id], onDelete: Cascade)
+  relation        GuardianRelation
+  isPrimaryContact Boolean         @default(false)
+  isEmergencyContact Boolean       @default(false)
+  createdAt       DateTime         @default(now())
+
+  @@unique([studentId, parentId])
+  @@index([studentId])
+  @@index([parentId])
+  @@map("student_guardian")
+}
+
+model StaffProfile {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  employeeId    String   @unique
+  department    String?
+  qualification String?
+  joiningDate   DateTime
+
+  // Only populated for role = TEACHER
+  gradeesTaught TeachergradeSubject[]
+
+  @@map("staff_profile")
+}
+
+// ----------------------------------------------------
+// ACADEMIC INSTITUTION INFRASTRUCTURE
+// ----------------------------------------------------
+
+model AcademicYear {
+  id          String   @id @default(cuid())
+  name        String   @unique // e.g. "2026-2027"
+  startDate   DateTime
+  endDate     DateTime
+  isCurrent   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  terms       Term[]
+  assignments TeachergradeSubject[]
+  assignmentTasks Assignment[]
+  invoices    Invoice[]
+  gradees     Grade[]
+  subjects     Subject[]
+  students    StudentProfile[]
+
+  @@index([isCurrent])
+  @@map("academic_year")
+}
+
+model Term {
+  id             String       @id @default(cuid())
+  name           String       // e.g. "Term 1"
+  academicYearId String
+  academicYear   AcademicYear @relation(fields: [academicYearId], references: [id], onDelete: Cascade)
+  startDate      DateTime
+  endDate        DateTime
+  isCurrent      Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  // School fees set for this term, one amount per grade
+  feeStructures  FeeStructure[]
+
+  @@index([academicYearId, isCurrent])
+  @@map("term")
+}
+
+model Grade {
+  id                 String     @id @default(cuid())
+  name               String     @unique // e.g. "A", "Honors"
+  section            String     @unique // e.g. "Beta"
+  academicYearId     String
+  academicYear       AcademicYear @relation(fields: [academicYearId], references: [id], onDelete: Cascade)
+  roomNumber         String?
+  capacity           Int        @default(30)
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+
+  assignments        TeachergradeSubject[]
+  assignmentTasks    Assignment[]
+  students           StudentProfile[]
+  subjects           Subject[]
+  fees               FeeStructure[]
+
+  @@index([academicYearId]) // grades are routinely queried by academic year
+  @@map("grade")
+}
+
+model Subject {
+  id           String     @id @default(cuid())
+  name         String
+  code         String     @unique // e.g. "MATH-101"
+  description  String?
+  gradeId        String
+  grade          Grade      @relation(fields: [gradeId], references: [id], onDelete: Cascade)
+  academicYearId String
+  academicYear   AcademicYear @relation(fields: [academicYearId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  teachers TeachergradeSubject[]
+  assignments Assignment[]
+
+  @@index([gradeId, academicYearId])
+  @@map("subject")
+}
+
+model TeachergradeSubject {
+  id             String       @id @default(cuid())
+  teacherId      String
+  teacher        StaffProfile @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  gradeId        String
+  grade          Grade        @relation(fields: [gradeId], references: [id], onDelete: Cascade)
+  subjectId      String
+  subject        Subject      @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  academicYearId String
+  academicYear   AcademicYear @relation(fields: [academicYearId], references: [id], onDelete: Cascade)
+
+  timetableSlots      TimetableSlot[]
+
+  @@unique([teacherId, gradeId, subjectId, academicYearId])
+  @@index([gradeId, academicYearId])
+  @@index([teacherId, academicYearId])
+  @@map("teacher_grade_subject")
+}
+
+// ----------------------------------------------------
+// ENROLLMENT & SCHEDULING
+// ----------------------------------------------------
+
+model TimetableSlot {
+  id                    String              @id @default(cuid())
+  teachergradeSubjectId String
+  teachergradeSubject   TeachergradeSubject @relation(fields: [teachergradeSubjectId], references: [id], onDelete: Cascade)
+
+  teacherId  String
+  gradeId    String
+  room       String?
+
+  dayOfWeek  Int // 1 = Monday ... 7 = Sunday
+  startTime  Int // minutes since midnight, e.g. 540 = 09:00
+  endTime    Int // minutes since midnight, e.g. 630 = 10:30
+
+  subjectName String?  // denormalized for quick display
+  teacherName String?  // denormalized for quick display
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([teacherId, dayOfWeek, startTime])
+  @@index([gradeId, dayOfWeek])
+  @@index([room, dayOfWeek])
+  @@map("timetable_slot")
+}
+
+// ----------------------------------------------------
+// ACADEMICS, ASSESSMENTS & GRADEBOOK
+// ----------------------------------------------------
+
+// ----------------------------------------------------
+// ASSIGNMENTS & SUBMISSIONS (AI-generated homework)
+// ----------------------------------------------------
+
+model Assignment {
+  id             String        @id @default(cuid())
+  title          String        // e.g. "Trigonometry Practice"
+  description    String?
+  type           AssignmentType @default(WITH_ANSWERS)
+  status         AssignmentStatus @default(DRAFT)
+  gradeId        String
+  grade          Grade         @relation(fields: [gradeId], references: [id], onDelete: Cascade)
+  academicYearId String
+  academicYear   AcademicYear  @relation(fields: [academicYearId], references: [id], onDelete: Cascade)
+  subjectId      String?
+  subject        Subject?      @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+  // JSON array of { id, question, points, answerKey? } — answerKey only for WITH_ANSWERS
+  questions      Json
+  dueDate        DateTime?
+  createdById    String
+  createdBy      User          @relation("AssignmentAuthor", fields: [createdById], references: [id])
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  submissions    AssignmentSubmission[]
+
+  @@index([gradeId, academicYearId])
+  @@map("assignment")
+}
+
+model AssignmentSubmission {
+  id            String                     @id @default(cuid())
+  assignmentId  String
+  assignment    Assignment                 @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  studentId     String
+  student       StudentProfile             @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  // JSON array of { questionId, answer }
+  answers       Json
+  score         Float?
+  totalPoints   Float                      @default(0)
+  // JSON array of { questionId, earned, correct, feedback, correctAnswer? } — populated after grading
+  feedback      Json?
+  status        AssignmentSubmissionStatus @default(SUBMITTED)
+  submittedAt   DateTime                   @default(now())
+  gradedAt      DateTime?
+  gradedById    String?
+  gradedBy      User?                      @relation("SubmissionGrader", fields: [gradedById], references: [id])
+  createdAt     DateTime                   @default(now())
+  updatedAt     DateTime                   @updatedAt
+
+  @@unique([assignmentId, studentId])
+  @@index([studentId])
+  @@map("assignment_submission")
+}
+
+// ----------------------------------------------------
+// FINANCE, TUITION FEES & BILLING
+// ----------------------------------------------------
+
+model FeeStructure {
+  id            String      @id @default(cuid())
+  gradeId       String
+  grade         Grade       @relation(fields: [gradeId], references: [id], onDelete: Cascade)
+  termId        String
+  term          Term        @relation(fields: [termId], references: [id], onDelete: Cascade)
+  amount        Decimal     @db.Decimal(10, 2)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  invoiceItems InvoiceItem[]
+  payments     Payment[]
+
+  @@unique([gradeId, termId])
+  @@index([termId])
+  @@map("fee_structure")
+}
+
+model Invoice {
+  id             String         @id @default(cuid())
+  invoiceNumber  String         @unique // e.g. "INV-2026-0001"
+  studentId      String
+  student        StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  academicYearId String
+  academicYear   AcademicYear   @relation(fields: [academicYearId], references: [id], onDelete: Cascade)
+  dueDate        DateTime
+  status         InvoiceStatus  @default(UNPAID)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  items    InvoiceItem[]
+  payments Payment[]
+
+  @@index([studentId, status])
+  @@index([status, dueDate])
+  @@map("invoice")
+}
+
+model InvoiceItem {
+  id             String       @id @default(cuid())
+  invoiceId      String
+  invoice        Invoice      @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  feeStructureId String
+  feeStructure   FeeStructure @relation(fields: [feeStructureId], references: [id])
+  amount         Decimal      @db.Decimal(10, 2)
+  createdAt     DateTime     @default(now())
+
+  @@unique([invoiceId, feeStructureId])
+  @@index([invoiceId])
+  @@map("invoice_item")
+}
+
+model Payment {
+  id              String        @id @default(cuid())
+  invoiceId       String
+  invoice         Invoice       @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  feeStructureId  String?
+  feeStructure    FeeStructure? @relation(fields: [feeStructureId], references: [id])
+  amount          Decimal       @db.Decimal(10, 2)
+  paymentDate     DateTime      @default(now())
+  paymentMethod   PaymentMethod
+  referenceNumber String?       @unique
+  recordedById    String
+  recordedBy      User          @relation("PaymentRecorder", fields: [recordedById], references: [id])
+  // Stripe metadata — set when a payment originates from a Stripe Checkout session
+  stripeCheckoutSessionId String? @unique
+  stripePaymentIntentId    String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([invoiceId])
+  @@index([feeStructureId])
+  @@map("payment")
+}
+
+// ----------------------------------------------------
+// BULLETIN & GENERAL COMMUNICATION
+// ----------------------------------------------------
+
+model Announcement {
+  id          String   @id @default(cuid())
+  title       String
+  content     String
+  targetRoles Role[]
+  authorId    String
+  author      User     @relation("Author", fields: [authorId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([createdAt])
+  @@map("announcement")
+}
+
+// ----------------------------------------------------
+// AI INSIGHTS & AI CHAT (TUTORIAL EXTENSIONS)
+// ----------------------------------------------------
+
+model AiInsight {
+  id          String         @id @default(cuid())
+  studentId   String
+  student     StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  insightType String         // e.g., "ACADEMIC_PERFORMANCE", "ATTENDANCE_FLAG", "RECOMMENDATION"
+  content     String         // AI-generated markdown text or summary
+  metadata    Json?          // Confidence rating, feature weights, or warning levels
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([studentId])
+  @@map("ai_insight")
+}

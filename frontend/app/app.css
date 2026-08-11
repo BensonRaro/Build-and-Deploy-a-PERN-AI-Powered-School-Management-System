@@ -1,0 +1,360 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/inter";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --font-sans:
+    "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* ── Hide scrollbars globally (keep scroll functionality) ───────────── */
+* {
+  scrollbar-width: none;        /* Firefox */
+  -ms-overflow-style: none;     /* IE & Edge */
+}
+
+*::-webkit-scrollbar {
+  display: none;                /* Chrome, Safari, Opera */
+}
+
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+body {
+  @apply bg-white dark:bg-gray-950;
+
+  @media (prefers-color-scheme: dark) {
+    color-scheme: dark;
+  }
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #020817;
+  --card: #ffffff;
+  --card-foreground: #020817;
+  --popover: #ffffff;
+  --popover-foreground: #020817;
+  --primary: #2563eb;
+  --primary-foreground: #f8fafc;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: #f1f5f9;
+  --accent-foreground: #0f172a;
+  --destructive: #ef4444;
+  --destructive-foreground: #f8fafc;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #2563eb;
+  --chart-1: #2563eb;
+  --chart-2: #60a8fb;
+  --chart-3: #3b86f7;
+  --chart-4: #90c7fe;
+  --chart-5: #bedcfe;
+  --sidebar: #f8fafc;
+  --sidebar-foreground: #0f172a;
+  --sidebar-primary: #2563eb;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e2e8f0;
+  --sidebar-accent-foreground: #2563eb;
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: #2563eb;
+  --font-sans: Inter, system-ui, sans-serif;
+  --font-serif: Georgia, serif;
+  --font-mono: JetBrains Mono, monospace;
+  --radius: 0.375rem;
+  --shadow-x: 0px;
+  --shadow-y: 4px;
+  --shadow-blur: 10px;
+  --shadow-spread: 0px;
+  --shadow-opacity: 0.1;
+  --shadow-color: 0, 0%, 0%;
+  --shadow-2xs: 0px 4px 10px 0px hsl(0, 0%, 0% / 0.05);
+  --shadow-xs: 0px 4px 10px 0px hsl(0, 0%, 0% / 0.05);
+  --shadow-sm:
+    0px 4px 10px 0px hsl(0, 0%, 0% / 0.1), 0px 1px 2px -1px hsl(0, 0%, 0% / 0.1);
+  --shadow:
+    0px 4px 10px 0px hsl(0, 0%, 0% / 0.1), 0px 1px 2px -1px hsl(0, 0%, 0% / 0.1);
+  --shadow-md:
+    0px 4px 10px 0px hsl(0, 0%, 0% / 0.1), 0px 2px 4px -1px hsl(0, 0%, 0% / 0.1);
+  --shadow-lg:
+    0px 4px 10px 0px hsl(0, 0%, 0% / 0.1), 0px 4px 6px -1px hsl(0, 0%, 0% / 0.1);
+  --shadow-xl:
+    0px 4px 10px 0px hsl(0, 0%, 0% / 0.1),
+    0px 8px 10px -1px hsl(0, 0%, 0% / 0.1);
+  --shadow-2xl: 0px 4px 10px 0px hsl(0, 0%, 0% / 0.25);
+  --tracking-normal: -0.015em;
+  --spacing: 0.25rem;
+}
+
+.dark {
+  --background: #020817;
+  --foreground: #f8fafc;
+  --card: #020817;
+  --card-foreground: #f8fafc;
+  --popover: #020817;
+  --popover-foreground: #f8fafc;
+  --primary: #3b82f6;
+  --primary-foreground: #0f172a;
+  --secondary: #1e293b;
+  --secondary-foreground: #f8fafc;
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
+  --accent: #1e293b;
+  --accent-foreground: #f8fafc;
+  --destructive: #7f1d1d;
+  --destructive-foreground: #f8fafc;
+  --border: #1e293b;
+  --input: #1e293b;
+  --ring: #1d4ed8;
+  --chart-1: #1d4ed8;
+  --chart-2: #2463eb;
+  --chart-3: #0da2e7;
+  --chart-4: #344256;
+  --chart-5: #214dc4;
+  --sidebar: #020817;
+  --sidebar-foreground: #f8fafc;
+  --sidebar-primary: #3b82f6;
+  --sidebar-primary-foreground: #020817;
+  --sidebar-accent: #1e293b;
+  --sidebar-accent-foreground: #f8fafc;
+  --sidebar-border: #1e293b;
+  --sidebar-ring: #1d4ed8;
+  --font-sans: Inter, system-ui, sans-serif;
+  --font-serif: Georgia, serif;
+  --font-mono: JetBrains Mono, monospace;
+  --radius: 0.375rem;
+  --shadow-x: 0px;
+  --shadow-y: 8px;
+  --shadow-blur: 15px;
+  --shadow-spread: 0px;
+  --shadow-opacity: 0.5;
+  --shadow-color: 0, 0%, 0%;
+  --shadow-2xs: 0px 8px 15px 0px hsl(0, 0%, 0% / 0.25);
+  --shadow-xs: 0px 8px 15px 0px hsl(0, 0%, 0% / 0.25);
+  --shadow-sm:
+    0px 8px 15px 0px hsl(0, 0%, 0% / 0.5), 0px 1px 2px -1px hsl(0, 0%, 0% / 0.5);
+  --shadow:
+    0px 8px 15px 0px hsl(0, 0%, 0% / 0.5), 0px 1px 2px -1px hsl(0, 0%, 0% / 0.5);
+  --shadow-md:
+    0px 8px 15px 0px hsl(0, 0%, 0% / 0.5), 0px 2px 4px -1px hsl(0, 0%, 0% / 0.5);
+  --shadow-lg:
+    0px 8px 15px 0px hsl(0, 0%, 0% / 0.5), 0px 4px 6px -1px hsl(0, 0%, 0% / 0.5);
+  --shadow-xl:
+    0px 8px 15px 0px hsl(0, 0%, 0% / 0.5),
+    0px 8px 10px -1px hsl(0, 0%, 0% / 0.5);
+  --shadow-2xl: 0px 8px 15px 0px hsl(0, 0%, 0% / 1.25);
+}
+
+/* ── Card surface visibility ───────────────────────────────────────────────
+   Dashboard cards rely on very subtle borders (border-border/20) and
+   shadows (shadow-black/[0.02]) that wash out against the page background —
+   invisible on white in light mode, near-black against the page in dark mode.
+   These overrides lift borders and shadows in BOTH modes so stat cards,
+   hero banners, sections, tables, and dialogs stay clearly distinguishable.
+   (ui/card.tsx is intentionally left untouched.)
+*/
+
+/* Light mode: strengthen translucent card borders so surfaces read clearly
+   against a white background. */
+.border-border\/10 {
+  border-color: color-mix(in oklab, var(--color-border) 45%, transparent);
+}
+.border-border\/15 {
+  border-color: color-mix(in oklab, var(--color-border) 60%, transparent);
+}
+.border-border\/20 {
+  border-color: color-mix(in oklab, var(--color-border) 80%, transparent);
+}
+.border-border\/25 {
+  border-color: color-mix(in oklab, var(--color-border) 70%, transparent);
+}
+.border-border\/30 {
+  border-color: color-mix(in oklab, var(--color-border) 100%, transparent);
+}
+
+/* Dark mode: brighten translucent card borders to a visible level. */
+.dark .border-border\/10 {
+  border-color: color-mix(in oklab, var(--color-border) 35%, transparent);
+}
+.dark .border-border\/15 {
+  border-color: color-mix(in oklab, var(--color-border) 45%, transparent);
+}
+.dark .border-border\/20 {
+  border-color: color-mix(in oklab, var(--color-border) 55%, transparent);
+}
+.dark .border-border\/25 {
+  border-color: color-mix(in oklab, var(--color-border) 50%, transparent);
+}
+.dark .border-border\/30 {
+  border-color: color-mix(in oklab, var(--color-border) 70%, transparent);
+}
+
+/* Shadows: give the resting shadows real presence in light mode, and recolor
+   the explicit shadow-black/[0.02] utilities (which wash the dark theme's
+   otherwise strong --shadow-* values out). */
+.shadow-black\/\[0\.02\] {
+  --tw-shadow-color: rgb(0 0 0 / 0.09);
+}
+.shadow-black\/\[0\.04\] {
+  --tw-shadow-color: rgb(0 0 0 / 0.14);
+}
+.dark .shadow-black\/\[0\.02\] {
+  --tw-shadow-color: rgb(0 0 0 / 0.35);
+}
+.dark .shadow-black\/\[0\.04\] {
+  --tw-shadow-color: rgb(0 0 0 / 0.45);
+}
+.dark .shadow-black\/10 {
+  --tw-shadow-color: rgb(0 0 0 / 0.55);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --font-serif: var(--font-serif);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --shadow-2xs: var(--shadow-2xs);
+  --shadow-xs: var(--shadow-xs);
+  --shadow-sm: var(--shadow-sm);
+  --shadow: var(--shadow);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+  --shadow-xl: var(--shadow-xl);
+  --shadow-2xl: var(--shadow-2xl);
+
+  --tracking-tighter: calc(var(--tracking-normal) - 0.05em);
+  --tracking-tight: calc(var(--tracking-normal) - 0.025em);
+  --tracking-normal: var(--tracking-normal);
+  --tracking-wide: calc(var(--tracking-normal) + 0.025em);
+  --tracking-wider: calc(var(--tracking-normal) + 0.05em);
+  --tracking-widest: calc(var(--tracking-normal) + 0.1em);
+}
+
+/* ── Custom sidebar scrollbar (thin, blends with glass design) ───────── */
+.sidebar-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar-scrollbar::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--sidebar-border) 30%, transparent);
+}
+
+.sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--sidebar-border) 50%, transparent);
+}
+
+/* Firefox scrollbar */
+.sidebar-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--sidebar-border) 30%, transparent) transparent;
+}
+
+/* ── Loader ring mask (used by GradientSpinnerRing) ──────────────────── */
+.loader-ring-mask {
+  mask-image: radial-gradient(farthest-side, transparent calc(100% - 2.5px), #fff calc(100% - 2.5px));
+  -webkit-mask-image: radial-gradient(farthest-side, transparent calc(100% - 2.5px), #fff calc(100% - 2.5px));
+}
+
+@keyframes blob {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+  50% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+  75% {
+    transform: translate(40px, 40px) scale(1.05);
+  }
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-4px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(4px);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    letter-spacing: var(--tracking-normal);
+  }
+}

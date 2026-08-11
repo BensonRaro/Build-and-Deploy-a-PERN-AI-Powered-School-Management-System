@@ -1,0 +1,113 @@
+{
+  "version": 1,
+  "skills": {
+    "ai-sdk": {
+      "source": "vercel/ai",
+      "sourceType": "github",
+      "skillPath": "skills/use-ai-sdk/SKILL.md",
+      "computedHash": "0883204d11b055e968dee697c5858e68064c27dfd4deb6310212895daa65c5ad"
+    },
+    "better-auth-best-practices": {
+      "source": "better-auth/skills",
+      "sourceType": "github",
+      "skillPath": "better-auth/best-practices/SKILL.md",
+      "computedHash": "e8b46af23c6b1bc7aefdae3cf816368058c05e46eadb9bdca4f744b17d05a866"
+    },
+    "better-auth-security-best-practices": {
+      "source": "better-auth/skills",
+      "sourceType": "github",
+      "skillPath": "security/SKILL.md",
+      "computedHash": "087c1094fa5f1834af4785c058dcc8c9abe4c1321b853883c76ea46c93a21cfe"
+    },
+    "create-auth": {
+      "source": "better-auth/skills",
+      "sourceType": "github",
+      "skillPath": "better-auth/create-auth/SKILL.md",
+      "computedHash": "cf5d2c852c66269dc350dec0db8cfb07634a2310aee5be1bfd7e643dca72f22e"
+    },
+    "email-and-password-best-practices": {
+      "source": "better-auth/skills",
+      "sourceType": "github",
+      "skillPath": "better-auth/emailAndPassword/SKILL.md",
+      "computedHash": "7786d722fa682b3d6a99793e73a9d51b59becefa595676134a993020633e068f"
+    },
+    "inngest-api": {
+      "source": "inngest/inngest-skills",
+      "sourceType": "github",
+      "skillPath": "skills/inngest-api/SKILL.md",
+      "computedHash": "e455106b9f5e4e7b4cbacb2f021fff4f96acc065bc926acb5355b4554518cd4a"
+    },
+    "inngest-api-cli": {
+      "source": "inngest/inngest-skills",
+      "sourceType": "github",
+      "skillPath": "skills/inngest-api-cli/SKILL.md",
+      "computedHash": "5b68dbfa9f024511776c2a993fd87d3481412c0ecbd36f33b24466c5f9fa4727"
+    },
+    "inngest-cli": {
+      "source": "inngest/inngest-skills",
+      "sourceType": "github",
+      "skillPath": "skills/inngest-cli/SKILL.md",
+      "computedHash": "f4c61514acd17f1af427cebee40da6e61214c51ff956b2dd4195d967fae543ec"
+    },
+    "inngest-durable-functions": {
+      "source": "inngest/inngest-skills",
+      "sourceType": "github",
+      "skillPath": "skills/inngest-durable-functions/SKILL.md",
+      "computedHash": "f3f5117f8a54bd9716c51b94bf78b0a6890b81c5ebbcf09644376a027ba6894c"
+    },
+    "inngest-events": {
+      "source": "inngest/inngest-skills",
+      "sourceType": "github",
+      "skillPath": "skills/inngest-events/SKILL.md",
+      "computedHash": "4fc14cc79c44b9045062e61646adf3a193fa4eb2cb808601f3bd5b2da0ee46ba"
+    },
+    "inngest-flow-control": {
+      "source": "inngest/inngest-skills",
+      "sourceType": "github",
+      "skillPath": "skills/inngest-flow-control/SKILL.md",
+      "computedHash": "1398bbedd62ce2ff72c50338ea0dfeaf5985f73f88c6bc69e9d7d204b7bc841c"
+    },
+    "inngest-middleware": {
+      "source": "inngest/inngest-skills",
+      "sourceType": "github",
+      "skillPath": "skills/inngest-middleware/SKILL.md",
+      "computedHash": "7addf27d08140583083211e0143a95d18280dcd2700d588edda339019d2e7a47"
+    },
+    "inngest-realtime": {
+      "source": "inngest/inngest-skills",
+      "sourceType": "github",
+      "skillPath": "skills/inngest-realtime/SKILL.md",
+      "computedHash": "a55f60fb8994dfb135821f6748722ecb47062e45dfdc23844acca352ae2df02b"
+    },
+    "inngest-steps": {
+      "source": "inngest/inngest-skills",
+      "sourceType": "github",
+      "skillPath": "skills/inngest-steps/SKILL.md",
+      "computedHash": "e1e5fe474150b63e571dda5e030b1b4eb6b630ff20cd7e2e59812e70825d64c6"
+    },
+    "prisma-postgres-setup": {
+      "source": "prisma/skills",
+      "sourceType": "github",
+      "skillPath": "prisma-postgres-setup/SKILL.md",
+      "computedHash": "c89d3aa91285d8e4964fcaa5238c99a3d3c20b617e032e731cf632330a85a5a6"
+    },
+    "shadcn": {
+      "source": "shadcn/ui",
+      "sourceType": "github",
+      "skillPath": "skills/shadcn/SKILL.md",
+      "computedHash": "f99ef49d9909d380ca683ceb8dc8c25775c20ee38140112c394e037d8c11ee18"
+    },
+    "tanstack-query": {
+      "source": "tanstack-skills/tanstack-skills",
+      "sourceType": "github",
+      "skillPath": "plugins/tanstack-query/skills/tanstack-query/SKILL.md",
+      "computedHash": "bfe2977e92667b84efeb4b12e5c3010807934aab2f7ac2b059241cd3da2a3e6e"
+    },
+    "tanstack-table": {
+      "source": "tanstack-skills/tanstack-skills",
+      "sourceType": "github",
+      "skillPath": "plugins/tanstack-table/skills/tanstack-table/SKILL.md",
+      "computedHash": "5527e42e541ac26fc1157e49d58c399b95e44eb276ef3caa7576ab138558d593"
+    }
+  }
+}
